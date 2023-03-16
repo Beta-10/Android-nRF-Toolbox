@@ -47,11 +47,6 @@ import no.nordicsemi.android.uart.view.UARTScreen
 
 val HomeDestinationId = createSimpleDestination("home-destination")
 
-val HomeDestinations = listOf(
-    defineDestination(HomeDestinationId) { HomeScreen() },
-    ScannerDestination
-)
-
 val CSCDestinationId = createSimpleDestination("csc-destination")
 val HRSDestinationId = createSimpleDestination("hrs-destination")
 val HTSDestinationId = createSimpleDestination("hts-destination")
@@ -61,6 +56,12 @@ val PRXDestinationId = createSimpleDestination("prx-destination")
 val RSCSDestinationId = createSimpleDestination("rscs-destination")
 val CGMSDestinationId = createSimpleDestination("cgms-destination")
 val UARTDestinationId = createSimpleDestination("uart-destination")
+
+val HomeDestinations = listOf(
+    //defineDestination(HomeDestinationId) { HomeScreen() },
+    defineDestination(UARTDestinationId) { UARTScreen() },
+    ScannerDestination
+)
 
 val ProfileDestinations = listOf(
     defineDestination(CSCDestinationId) { CSCScreen() },

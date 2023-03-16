@@ -28,6 +28,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+buildscript {
+    dependencies {
+        classpath("com.android.tools.build:gradle:7.4.2")
+    }
+}
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
