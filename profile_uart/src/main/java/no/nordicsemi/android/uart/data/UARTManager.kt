@@ -56,8 +56,12 @@ private val UART_RX_CHARACTERISTIC_UUID = UUID.fromString("6E400002-B5A3-F393-E0
 private val UART_TX_CHARACTERISTIC_UUID = UUID.fromString("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
 
 private val BATTERY_SERVICE_UUID = UUID.fromString("0000180F-0000-1000-8000-00805f9b34fb")
-private val BATTERY_LEVEL_CHARACTERISTIC_UUID =
-    UUID.fromString("00002A19-0000-1000-8000-00805f9b34fb")
+private val BATTERY_LEVEL_CHARACTERISTIC_UUID = UUID.fromString("00002A19-0000-1000-8000-00805f9b34fb")
+
+val UBLOCK_SERVICE_UUID: UUID = UUID.fromString("6E040002-1212-EFDE-1523-785FEF13D123")
+private val X_CHARACTERISTIC_UUID = UUID.fromString("6E040004-1212-EFDE-1523-785FEF13D123")
+private val Y_CHARACTERISTIC_UUID = UUID.fromString("6E040005-1212-EFDE-1523-785FEF13D123")
+private val Z_CHARACTERISTIC_UUID = UUID.fromString("6E040006-1212-EFDE-1523-785FEF13D123")
 
 internal class UARTManager(
     context: Context,
@@ -69,6 +73,10 @@ internal class UARTManager(
 
     private var rxCharacteristic: BluetoothGattCharacteristic? = null
     private var txCharacteristic: BluetoothGattCharacteristic? = null
+
+    private var xCharacteristic: BluetoothGattCharacteristic? = null
+    private var yCharacteristic: BluetoothGattCharacteristic? = null
+    private var zCharacteristic: BluetoothGattCharacteristic? = null
 
     private var useLongWrite = true
 
@@ -100,6 +108,7 @@ internal class UARTManager(
                 .map {
                     val text: String = it.getStringValue(0) ?: String.EMPTY
                     log(10, "\"$text\" received")
+                    Log.d("UBLOCK_LOG", "Received data from the UART characteristic.")
                     val messages = data.value.messages + UARTRecord(text, UARTRecordType.OUTPUT)
                     messages.takeLast(50)
                 }
@@ -115,6 +124,48 @@ internal class UARTManager(
                     data.value = data.value.copy(batteryLevel = it.batteryLevel)
                 }.launchIn(scope)
             enableNotifications(batteryLevelCharacteristic).enqueue()
+
+            setNotificationCallback(xCharacteristic).asFlow()
+                .flowOn(Dispatchers.IO)
+                .map {
+                    val text: String = it.getStringValue(0) ?: String.EMPTY
+                    log(10, "\"$text\" received")
+                    Log.d("UBLOCK_LOG", "Received data from the X characteristic.")
+                    val messages = data.value.messages + UARTRecord(text, UARTRecordType.OUTPUT)
+                    messages.takeLast(50)
+                }
+                .onEach {
+                    data.value = data.value.copy(messages = it)
+                }.launchIn(scope)
+            enableNotifications(xCharacteristic).enqueue()
+
+            setNotificationCallback(yCharacteristic).asFlow()
+                .flowOn(Dispatchers.IO)
+                .map {
+                    val text: String = it.getStringValue(0) ?: String.EMPTY
+                    log(10, "\"$text\" received")
+                    Log.d("UBLOCK_LOG", "Received data from the Y characteristic.")
+                    val messages = data.value.messages + UARTRecord(text, UARTRecordType.OUTPUT)
+                    messages.takeLast(50)
+                }
+                .onEach {
+                    data.value = data.value.copy(messages = it)
+                }.launchIn(scope)
+            enableNotifications(yCharacteristic).enqueue()
+
+            setNotificationCallback(zCharacteristic).asFlow()
+                .flowOn(Dispatchers.IO)
+                .map {
+                    val text: String = it.getStringValue(0) ?: String.EMPTY
+                    log(10, "\"$text\" received")
+                    Log.d("UBLOCK_LOG", "Received data from the Z characteristic.")
+                    val messages = data.value.messages + UARTRecord(text, UARTRecordType.OUTPUT)
+                    messages.takeLast(50)
+                }
+                .onEach {
+                    data.value = data.value.copy(messages = it)
+                }.launchIn(scope)
+            enableNotifications(zCharacteristic).enqueue()
         }
 
         override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
@@ -143,6 +194,15 @@ internal class UARTManager(
             gatt.getService(BATTERY_SERVICE_UUID)?.run {
                 batteryLevelCharacteristic = getCharacteristic(BATTERY_LEVEL_CHARACTERISTIC_UUID)
             }
+
+            val uBlockService: BluetoothGattService? = gatt.getService(UBLOCK_SERVICE_UUID)
+            if (uBlockService != null) {
+                xCharacteristic = uBlockService.getCharacteristic(X_CHARACTERISTIC_UUID)
+                yCharacteristic = uBlockService.getCharacteristic(Y_CHARACTERISTIC_UUID)
+                zCharacteristic = uBlockService.getCharacteristic(Z_CHARACTERISTIC_UUID)
+                Log.d("UBLOCK_LOG", "Looks like it is working with the uBlock terminal...")
+            }
+
             return rxCharacteristic != null && txCharacteristic != null && (writeRequest || writeCommand)
         }
 
@@ -176,6 +236,7 @@ internal class UARTManager(
                 )
             )
             log(10, "\"$text\" sent")
+            Log.d("UBLOCK_LOG", "Sending data")
         }
     }
 
