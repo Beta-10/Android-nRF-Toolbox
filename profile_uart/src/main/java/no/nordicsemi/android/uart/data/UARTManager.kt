@@ -49,6 +49,7 @@ import no.nordicsemi.android.common.logger.NordicLogger
 import no.nordicsemi.android.service.ConnectionObserverAdapter
 import no.nordicsemi.android.utils.EMPTY
 import no.nordicsemi.android.utils.launchWithCatch
+import java.nio.charset.Charset
 import java.util.*
 
 val UART_SERVICE_UUID: UUID = UUID.fromString("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
@@ -99,6 +100,23 @@ internal class UARTManager(
         return Log.VERBOSE
     }
 
+    fun Array<out Byte>.toByteArray(): ByteArray {
+        return ByteArray(size) { index -> this[index] }
+    }
+
+    /*
+ Result = new StringBuilder(Bytes.Length * 2);
+string HexAlphabet = "0123456789ABCDEF";
+
+foreach (byte B in Bytes)
+{
+    Result.Append(HexAlphabet[(int)(B >> 4)]);
+    Result.Append(HexAlphabet[(int)(B & 0xF)]);
+}
+
+return Result.ToString();
+*/
+
     private inner class UARTManagerGattCallback : BleManagerGattCallback() {
 
         @SuppressLint("WrongConstant")
@@ -129,6 +147,8 @@ internal class UARTManager(
                 .flowOn(Dispatchers.IO)
                 .map {
                     val text: String = it.getStringValue(0) ?: String.EMPTY
+                    val byteData = it.value
+
                     log(10, "\"$text\" received")
                     Log.d("UBLOCK_LOG", "Received data from the X characteristic.")
                     val messages = data.value.messages + UARTRecord(text, UARTRecordType.OUTPUT)
