@@ -48,15 +48,15 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/NordicTheme">
+        android:supportsRtl="true">
+        <!-- android:theme="@style/NordicTheme"> -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="stateVisible|adjustResize"
-            android:theme="@style/NordicTheme.SplashScreen">
+            android:windowSoftInputMode="stateVisible|adjustResize">
+            <!--android:theme="@style/NordicTheme.SplashScreen"> -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

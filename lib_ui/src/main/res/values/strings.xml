@@ -31,7 +31,7 @@
   -->
 
 <resources>
-    <string name="app_name">nRF Toolbox</string>
+    <string name="app_name">DiagSol Comm Module</string>
 
     <string name="dialog">Dialog</string>
     <string name="cancel">Cancel</string>

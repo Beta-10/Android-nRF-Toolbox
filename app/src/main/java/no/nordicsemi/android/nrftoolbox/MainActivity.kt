@@ -49,11 +49,13 @@ import no.nordicsemi.android.common.theme.NordicTheme
 import no.nordicsemi.android.gls.GLSDestination
 import no.nordicsemi.android.nrftoolbox.repository.ActivitySignals
 import no.nordicsemi.android.toolbox.scanner.ScannerDestination
+import androidx.activity.ComponentActivity
 
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : NordicActivity() {
+//class MainActivity : NordicActivity() {
+class MainActivity : ComponentActivity() {
 
     //private val CHANNEL_ID = "channel_id_example_01"
     //private val notificationId = 101
@@ -65,7 +67,6 @@ class MainActivity : NordicActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            //NordicTheme {
                 Surface(
                     color = MaterialTheme.colorScheme.surface
                     //modifier = Modifier.fillMaxSize()
@@ -73,7 +74,6 @@ class MainActivity : NordicActivity() {
                     NavigationView(HomeDestinations + ProfileDestinations + ScannerDestination + GLSDestination)
                 }
                 AnalyticsPermissionRequestDialog()
-            //}
         }
     }
 
